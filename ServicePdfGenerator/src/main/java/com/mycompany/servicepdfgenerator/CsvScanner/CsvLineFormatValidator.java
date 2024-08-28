@@ -20,8 +20,7 @@ public class CsvLineFormatValidator {
         return this.senderIndex;
     }
 
-
-    /* Valida que exista una columna destinatario y remitente */
+    /*
     public void checkCsvIdentifiers(String[] identifiers) throws IllegalArgumentException {
         for(int i = 0; i < identifiers.length; i++){
             if (identifiers[i].trim().equalsIgnoreCase("destinatario")){
@@ -35,15 +34,21 @@ public class CsvLineFormatValidator {
             throw new IllegalArgumentException("Las palabras claves destinatario o remitente no fueron declaradas en el CSV");
         }
 
+    }*/
+
+    public void checkCsvKeys(String[] keys) throws IllegalArgumentException {
+        if(keys.length < 1){
+            throw new IllegalArgumentException("No se encontraron identificadores en el csv");
+        }
     }
 
-    /* Valida que la fila contenga ambos nombres y un formato valido */
-    public boolean checkCsvParticipants(String[] identifiers) {
-        if(identifiers.length > 2 || identifiers.length <= 1){
-            return false;
+    public void formatCsvStrings(String[] keys){
+        for(int keyposition = 0; keyposition < keys.length; keyposition++){
+            keys[keyposition] = keys[keyposition].trim();
         }
-        identifiers[0] = identifiers[0].trim();
-        identifiers[1] = identifiers[1].trim();
-        return !(identifiers[0].isEmpty() || identifiers[1].isEmpty());
+    }
+
+    public boolean checkValidLengthLine(String[] data, int numberOfKeys){
+        return data.length == numberOfKeys;
     }
 }

@@ -7,6 +7,7 @@ import com.mycompany.servicepdfgenerator.renderPdf.Renderizador;
 import java.util.ArrayList;
 
 public class Controller {
+
     
     private TemplateScanner templateScanner;
     private CsvReader csvReader;
@@ -37,5 +38,5 @@ public class Controller {
     }
     
     
-    
+
 }

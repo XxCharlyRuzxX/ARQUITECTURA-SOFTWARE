@@ -1,7 +1,0 @@
-com/mycompany/servicepdfgenerator/renderPdf/Renderizador.class
-com/mycompany/servicepdfgenerator/TemplateScanner/TemplateScanner.class
-com/mycompany/servicepdfgenerator/CsvScanner/CsvReader.class
-com/mycompany/servicepdfgenerator/controller/Controller.class
-com/mycompany/servicepdfgenerator/CsvScanner/MessageParticipants.class
-com/mycompany/servicepdfgenerator/ServicePdfGenerator.class
-com/mycompany/servicepdfgenerator/CsvScanner/CsvLineFormatValidator.class

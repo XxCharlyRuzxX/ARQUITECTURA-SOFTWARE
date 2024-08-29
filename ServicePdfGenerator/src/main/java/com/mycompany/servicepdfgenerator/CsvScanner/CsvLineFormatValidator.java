@@ -7,7 +7,7 @@ public class CsvLineFormatValidator {
     }
 
     public void checkCsvKeys(String[] keys) throws IllegalArgumentException {
-        if(keys.length < 1){
+        if(keys == null || (keys.length == 1 && keys[0].isEmpty())){
             throw new IllegalArgumentException("No se encontraron identificadores en el csv");
         }
     }

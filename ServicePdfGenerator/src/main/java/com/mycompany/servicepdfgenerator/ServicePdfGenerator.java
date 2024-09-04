@@ -1,5 +1,5 @@
 package com.mycompany.servicepdfgenerator;
-/*
+
 import com.mycompany.servicepdfgenerator.controller.Controller;
 
 
@@ -12,4 +12,3 @@ public class ServicePdfGenerator {
         controller.GeneratePdf(templatePath, CsvPath, outputPath);
     }
 }
-*/

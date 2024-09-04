@@ -12,100 +12,27 @@ public class CsvReader {
 
     /* Atributos */
     private final String filePath;
-    private ArrayList<HashMap<String, String>> dataLines;
-    private HashSet<String> identifiers
-            ;
+    private final ArrayList<HashMap<String, String>> dataLines;
+    private final HashSet<String> identifiers;
     private boolean isCsvRead = false;
-    private ArrayList<String[]> csvLines;
-    private int columns;
+    private CsvFormatValidator csvFormatValidator;
+
 
     /* Constructor */
     public CsvReader(String filePath) {
         this.filePath = filePath;
         this.dataLines = new ArrayList<>();
-        this.csvLines = new ArrayList<>();
         this.identifiers = new HashSet<>();
-    }
-
-
-
-    /* Convierte la línea en un objeto tipo MessageParticipants, asignando los nombres dependiendo de las keys de la primera fila */
-
-    private HashMap<String, String> csvDataLineToHashMap(String[] keys, String[] data){
-        HashMap<String, String> line = new HashMap<>();
-        for (int i = 0; i < data.length; i++) {
-            line.put(keys[i], data[i]);
-        }
-        return line;
+        this.csvFormatValidator = new CsvFormatValidator();
     }
 
     private void initializeReader() throws IOException, IllegalArgumentException {
         if(!this.isCsvRead){
             readCsv();
-            parseIdentifiersToSet();
-
             this.isCsvRead = true;
         }
     }
 
-    private void readCsv() throws IOException {
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(this.filePath));
-        String line;
-        while((line = bufferedReader.readLine()) != null) {
-            this.csvLines.add(line.split(","));
-        }
-        bufferedReader.close();
-    }
-    private void parseIdentifiersToSet() throws IllegalArgumentException {
-        ArrayList<String[]> identifiers = new ArrayList<>(this.csvLines);
-        formatRow(identifiers.get(0));
-        validateIdentifiers(identifiers.get(0));
-        if(!this.identifiers.addAll(Arrays.asList(identifiers.get(0)))){
-            throw new IllegalArgumentException("Identificadores redundantes en el CSV");
-        }
-        this.columns = this.identifiers.size();
-    }
-
-    /*
-    private HashMap<String, String> parseDataRowToMap(String[] row){
-        String[] temporalRow = row.clone();
-        formatRow(temporalRow);
-        if(validateRowData(temporalRow)){
-            HashMap<String, String> rowMap = new HashMap<>();
-            for (int position = 0; position < this.columns; position++){
-                // rowMap.put(this.identifiers.)
-            }
-        }
-    }
-*/
-    private void validateIdentifiers(String[] identifiers) throws IllegalArgumentException {
-        if (identifiers == null || (identifiers.length == 1 && identifiers[0].isEmpty())){
-            throw new IllegalArgumentException("No existen identificadores en el CSV");
-        }
-        for (String identifier: identifiers) {
-            if(identifier.isEmpty()){
-                throw new IllegalArgumentException("Los identificadores están incompletos");
-            }
-        }
-    }
-
-    private boolean validateRowData(String[] row) {
-        if (row.length != this.columns){
-            return false;
-        }
-        for (String data: row) {
-            if(data.isEmpty()){
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void formatRow(String[] row) {
-        for (int position = 0; position < row.length; position++) {
-            row[position] = row[position].trim();
-        }
-    }
     public ArrayList<HashMap<String, String>> getDataLines() throws IOException, IllegalArgumentException{
         initializeReader();
         return this.dataLines;
@@ -115,4 +42,53 @@ public class CsvReader {
         initializeReader();
         return this.identifiers;
     }
+
+    private void readCsv() throws IOException, IllegalArgumentException {
+        BufferedReader bufferedReader = new BufferedReader(new FileReader(this.filePath));
+        ArrayList<String[]> rows = new ArrayList<>();
+        String line;
+        while((line = bufferedReader.readLine()) != null) {
+            String[] formatLine = line.split(",");
+            formatRow(formatLine);
+            rows.add(formatLine);
+        }
+        bufferedReader.close();
+        this.csvFormatValidator.validateEmptyCsv(rows);
+        String[] identifiers = rows.getFirst();
+        parseIdentifiersToSet(identifiers);
+        addDataRows(rows, identifiers);
+    }
+
+    private void parseIdentifiersToSet(String[] identifiers) throws IllegalArgumentException {
+        this.csvFormatValidator.validateIdentifiers(identifiers);
+        for (String identifier : identifiers){
+            if(!this.identifiers.add(identifier)){
+                throw new IllegalArgumentException("Identificadores redundantes en el CSV");
+            }
+        }
+    }
+
+    private void addDataRows(ArrayList<String[]> rows, String[] identifiers) {
+        for(String[] row : rows){
+            if(this.csvFormatValidator.validateRowData(row) && row != identifiers){
+                this.dataLines.add(parseDataRowToMap(row, identifiers));
+            }
+        }
+        this.csvFormatValidator.validateArrayEmptyData(this.dataLines);
+    }
+
+    private HashMap<String, String> parseDataRowToMap(String[] row, String[] identifiers){
+        HashMap<String, String> rowMap = new HashMap<>();
+        for (int position = 0; position < identifiers.length; position++){
+            rowMap.put(identifiers[position], row[position]);
+        }
+        return rowMap;
+    }
+
+    private void formatRow(String[] row) {
+        for (int position = 0; position < row.length; position++) {
+            row[position] = row[position].trim();
+        }
+    }
+
 }

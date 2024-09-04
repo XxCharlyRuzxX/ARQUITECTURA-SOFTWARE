@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
  * @author Rey
  */
 
-/*
+
 public class Renderizador {
     private int numPaginas;
     private String contenido;
@@ -101,8 +101,5 @@ public class Renderizador {
             e.printStackTrace();
         }
     }
-    
-    
-     
+
 }
-*/
